@@ -144,6 +144,7 @@ export default function Header() {
           )}
         </div>
 
+        {/* Mobile Controls */}
         <div className="md:hidden flex items-center gap-3">
           <button onClick={toggleTheme} className={`mt-1 md:mt-0 inline-flex items-center px-3 py-1 border rounded-full text-sm transition ${theme === 'dark' ? 'border-gray-600 hover:bg-gray-800' : 'border-gray-300 hover:bg-gray-100'}`}>
             {theme === 'dark' ? (
@@ -178,20 +179,81 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className={`md:hidden border-t ${theme === 'light' ? 'bg-white border-gray-100' : 'bg-gray-900 border-gray-700'}`} onKeyDown={handleKeyDown} role="menu">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className={`md:hidden border-t ${theme === 'light' ? 'bg-white border-gray-100' : 'bg-gray-900 border-gray-700'}`}
+            onKeyDown={handleKeyDown}
+            role="menu"
+          >
             <div className="px-4 py-4 space-y-4">
-              <div className="pb-4">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2 px-2">Select Language</h3>
+              <div className="space-y-2">
+                {memoizedNavItems.map((item) => (
+                  <div key={item.label}>
+                    {item.subItems ? (
+                      <div>
+                        <p className="text-md font-semibold">{item.label}</p>
+                        <div className="ml-4 space-y-1 mt-1">
+                          {item.subItems.map((sub) => (
+                            <Link
+                              key={sub.label}
+                              href={sub.href}
+                              className={`block text-sm ${theme === 'light' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-100 hover:bg-gray-700'} px-3 py-2 rounded`}
+                            >
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <Link
+                        href={item.href!}
+                        className={`block text-md font-medium ${theme === 'light' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-100 hover:bg-gray-700'} px-3 py-2 rounded`}
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Select Language</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {languages.map((lang) => (
-                    <button key={lang} onClick={() => setSelectedLang(lang)} className={`px-3 py-2 text-sm rounded-lg transition-colors ${selectedLang === lang ? 'bg-blue-600 text-white' : theme === 'light' ? 'bg-gray-50 hover:bg-gray-100 text-gray-700' : 'bg-gray-800 hover:bg-gray-700 text-gray-100'}`}>
+                    <button
+                      key={lang}
+                      onClick={() => setSelectedLang(lang)}
+                      className={`px-3 py-2 text-sm rounded-lg transition-colors ${selectedLang === lang ? 'bg-blue-600 text-white' : theme === 'light' ? 'bg-gray-50 hover:bg-gray-100 text-gray-700' : 'bg-gray-800 hover:bg-gray-700 text-gray-100'}`}
+                    >
                       {lang}
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                {user ? (
+                  <>
+                    <Link href="/profile" className={`block px-3 py-2 text-sm ${theme === 'light' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-100 hover:bg-gray-700'} rounded`}>
+                      Your Profile
+                    </Link>
+                    <button
+                      onClick={() => dispatch(logout())}
+                      className={`block w-full text-left px-3 py-2 text-sm ${theme === 'light' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-100 hover:bg-gray-700'} rounded`}
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link href="/auth/login" className="block px-3 py-2 bg-blue-600 text-white text-center rounded hover:bg-blue-700">
+                    Login
+                  </Link>
+                )}
               </div>
             </div>
           </motion.div>
@@ -200,4 +262,3 @@ export default function Header() {
     </header>
   );
 }
-   
